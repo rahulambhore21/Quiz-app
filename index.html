@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz App</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      text-align: center;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      width: 50%;
+      max-width: 700px;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s;
+    }
+    h2 {
+      font-size: 40px;
+    }
+    .option {
+      display: block;
+      padding: 20px;
+      margin: 20px auto;
+      width: 80%;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.3);
+      color: white;
+      transition: all 0.3s ease-in-out;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .option:hover {
+      background: rgba(255, 255, 255, 0.5);
+      transform: scale(1.05);
+    }
+    .correct {
+      background-color: #4caf50 !important;
+      animation: glowGreen 0.5s ease-in-out;
+    }
+    .wrong {
+      background-color: #e74c3c !important;
+      animation: glowRed 0.5s ease-in-out;
+    }
+    #nextBtn {
+      display: none;
+      margin-top: 20px;
+      padding: 12px 24px;
+      border: none;
+      background-color: #ffcc00;
+      color: #333;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+    #nextBtn:hover {
+      background-color: #e6b800;
+      transform: scale(1.05);
+    }
+    @keyframes glowGreen {
+      0% { box-shadow: 0 0 5px #4caf50; }
+      100% { box-shadow: 0 0 20px #4caf50; }
+    }
+    @keyframes glowRed {
+      0% { box-shadow: 0 0 5px #e74c3c; }
+      100% { box-shadow: 0 0 20px #e74c3c; }
+    }
+    #questionNumber {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="questionNumber"></div>
+    <h2 id="question">Loading...</h2>
+    <div id="options"></div>
+    <button id="nextBtn" onclick="nextQuestion()">Next</button>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        question: "What is teamwork?",
+        options: [
+          "Working together.",
+          "Working together with no goal",
+          "Working together with a goal.",
+          "Working together towards a common goal.",
+        ],
+        correct: 3,
+      },
+      {
+        question: "Why is teamwork important?",
+        options: [
+          "Increases efficiency.",
+          "Increases productivity.",
+          "Fosters innovation.",
+          "All of the above",
+        ],
+        correct: 3,
+      },
+      {
+        question: "Answer orally the key skills for effective teamwork and communication.",
+        options: [],
+        correct: null,
+      },
+      {
+        question: "Benefits of teamwork does not include:",
+        options: [
+          "Enhances creativity.",
+          "Builds Stronger Relationships",
+          "Improves efficiency",
+          "Creates a gap between employees' thoughts and ideas.",
+        ],
+        correct: 3,
+      },
+      {
+        question: "Name the places where teamwork is important and used on a daily basis.",
+        options: [],
+        correct: null,
+      },
+    ];
+
+    let currentQuestionIndex = 0;
+
+    function loadQuestion() {
+      document.getElementById("nextBtn").style.display = "none";
+      let qData = quizData[currentQuestionIndex];
+      document.getElementById("questionNumber").innerText = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
+      document.getElementById("question").innerText = qData.question;
+      let optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+      
+      if (qData.options.length > 0) {
+        qData.options.forEach((opt, index) => {
+          let button = document.createElement("button");
+          button.innerText = opt;
+          button.classList.add("option");
+          button.onclick = () => checkAnswer(index, button);
+          optionsDiv.appendChild(button);
+        });
+      } else {
+        document.getElementById("nextBtn").style.display = "block";
+      }
+    }
+
+    function checkAnswer(selectedIndex, button) {
+      let correctIndex = quizData[currentQuestionIndex].correct;
+      let options = document.querySelectorAll(".option");
+      options.forEach((btn, index) => {
+        btn.style.pointerEvents = "none";
+        if (index === correctIndex) {
+          btn.classList.add("correct");
+        }
+        if (index === selectedIndex && selectedIndex !== correctIndex) {
+          btn.classList.add("wrong");
+        }
+      });
+      document.getElementById("nextBtn").style.display = "block";
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        loadQuestion();
+      } else {
+        showCompletionMessage();
+      }
+    }
+
+    function showCompletionMessage() {
+      document.querySelector(".container").innerHTML = `
+        <h2>🎉 Congratulations! 🎉</h2>
+        <p>You have successfully completed the teamwork and communication quiz.</p>
+        <p>Remember, teamwork is key to success in any field!</p>
+        <p>Apply these skills in your practicals and beyond! 🚀</p>
+        <button onclick="restartQuiz()" style="margin-top: 20px; padding: 12px 24px; border: none; background-color: #ffcc00; color: #333; cursor: pointer; border-radius: 5px; font-size: 16px;">Restart Quiz</button>
+      `;
+    }
+
+    function restartQuiz() {
+      currentQuestionIndex = 0;
+      document.querySelector(".container").innerHTML = `
+        <div id="questionNumber"></div>
+        <h2 id="question">Loading...</h2>
+        <div id="options"></div>
+        <button id="nextBtn" onclick="nextQuestion()">Next</button>
+      `;
+      loadQuestion();
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
